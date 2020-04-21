@@ -1,8 +1,11 @@
 
 using AutoMapper;
+using CodeCamp.Controllers;
 using CodeCamp.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +32,31 @@ namespace CodeCamp
 
            // services.AddAutoMapper();
             services.AddAutoMapper(typeof(Startup));
+
+ 
+
+            services.AddApiVersioning(opt =>
+            {
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 1);
+                opt.ReportApiVersions = true;
+                opt.ApiVersionReader = new UrlSegmentApiVersionReader();
+                //opt.ApiVersionReader = ApiVersionReader.Combine(
+                //  new HeaderApiVersionReader("X-Version"),
+                //  new QueryStringApiVersionReader("ver", "version"));
+
+                opt.Conventions.Controller<TalksController>()
+                .HasApiVersion(new ApiVersion(1, 0));
+                
+                 // .HasApiVersion(new ApiVersion(1, 0))
+                  //.HasApiVersion(new ApiVersion(1, 1))
+                  //.Action(c => c.Delete(default(string), default(int)))
+                    //.MapToApiVersion(1, 1);
+
+            });
+
+            services.AddMvc(opt => opt.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
 
             services.AddControllers();
         }
